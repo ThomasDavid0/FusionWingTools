@@ -12,26 +12,38 @@ setup_install([
     ])
 
 
+from acdesign.aircraft import Plane
+
+
+from .wingtool import tag_methods
+tag_methods()
+from .wingtool.fusion_tools import create_document
+def parse_plane(acjson):
+    with open(acjson, "r") as f:
+        data = load(f)
+    data["panels"][0]["dihedral"] = 10.0
+    data["panels"][0]["otbd"]["incidence"] = 10.0
+
+    return Plane.create(**data)
 
 
 def run(context):
     ui = None
     try:
-        
-        from acdesign.aircraft import Plane
-        from .creators import create_plane
         app = adsk.core.Application.get()
         ui  = app.userInterface
 
+        plane = parse_plane("C://Users//td6834//AppData//Roaming//Autodesk//Autodesk Fusion 360//API//Scripts//WingTool//aircraft.json")
         
-        with open("C://Users//td6834//AppData//Roaming//Autodesk//Autodesk Fusion 360//API//Scripts//AircrafDesign//tests//data//aircraft.json", "r") as f:
-            plane = Plane.create(**load(f))
+        #doc = create_document("test_plane")
+        doc = app.activeDocument
+        plane.create_fusion(doc)
 
 
-        doc = create_plane(plane)        
-
-#   
-        #sketch = create_rib(component, plane.panels[0].inbd)
+        ui.activeSelections.add(plane.component)
+        ui.commandDefinitions.itemById('FindInWindow').execute()
+        
+        pass
         
         
 
