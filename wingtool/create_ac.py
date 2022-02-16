@@ -1,23 +1,28 @@
 
 from acdesign.aircraft import Plane, Panel, Rib
 from .fusion_tools import get_or_create_component, create_document, get_or_create_sketch
-
+from geometry import Points, Point
 
 
 def create_rib(self: Rib, parent, name: str):
     occurrence = get_or_create_component(parent, name,  self.transform)
     self.component = occurrence.component
-    self.sketch = get_or_create_sketch(self.component, "base_profile", self.component.xYConstructionPlane)
+    self.sketch = get_or_create_sketch(self.component, self.name, self.component.xYConstructionPlane, True)
     
-    try:
-        old_spline = self.sketch.sketchCurves.sketchFittedSplines[0]
-        old_spline.deleteMe()
-    except:
-        pass
-
-    spline_points = self.points.fusion_sketch()
+    spline_points = (self.points * Point(1, -1, 0)).fusion_sketch()
     spline = self.sketch.sketchCurves.sketchFittedSplines.add(spline_points)
     spline.isFixed = True
+    
+    self.base_sketch = get_or_create_sketch(self.component, "base_profile", self.component.xYConstructionPlane)
+
+    try:
+        old_spline = self.base_sketch.sketchCurves.sketchFixedSplines[0]
+        self.base_profile = old_spline.replaceGeometry(spline.geometry)
+    except:
+        self.base_profile = self.base_sketch.sketchCurves.sketchFixedSplines.addByNurbsCurve(spline.geometry)    
+        
+    
+
     #line = sketch.sketchCurves.sketchLines.addByTwoPoints(spline_points[0], spline_points[-1])
 
 

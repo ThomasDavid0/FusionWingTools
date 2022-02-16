@@ -27,9 +27,18 @@ def get_or_create_component(root, name: str, transform: Transformation):
         
     return occ
 
-def get_or_create_sketch(parent, name, plane):
-    sketch = parent.sketches.itemByName(name)
+def get_or_create_sketch(parent, name, plane, forcecreate=False):
+    
+    i=0
+    while True:
+        checkname = f"{name}_{i}" if i > 0 else name
+        sketch = parent.sketches.itemByName(checkname)
+        if sketch is None or not forcecreate:
+            break
+        i += 1
+    
     if sketch is None:
         sketch = parent.sketches.add(plane) 
-        sketch.name=name
+        sketch.name=checkname
     return sketch
+    

@@ -24,9 +24,11 @@ from .wingtool.fusion_tools import create_document
 def parse_plane(acjson):
     with open(acjson, "r") as f:
         data = load(f)
-    data["panels"][0]["dihedral"] = 10.0
- #   data["panels"][0]["otbd"]["incidence"] = 10.0
-
+    #data["panels"][0]["otbd"]["chord"] = 250.0
+    #data["panels"][0]["otbd"]["airfoil"] = "dae21-il"
+    #
+    #data["panels"][0]["inbd"]["chord"] = 300.0
+    #data["panels"][0]["inbd"]["airfoil"] = "defcnd1-il"
     return Plane.create(**data)
 
 
@@ -38,8 +40,8 @@ def run(context):
 
         plane = parse_plane(Path(__file__).parent / "aircraft.json")
         
-        doc = create_document("test_plane")
-        #doc = app.activeDocument
+        #doc = create_document("test_plane")
+        doc = app.activeDocument
         plane.create_fusion(doc)
 
 
