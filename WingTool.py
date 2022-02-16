@@ -19,15 +19,16 @@ from acdesign.aircraft import Plane
 
 from .wingtool import tag_methods
 tag_methods()
-from .wingtool.fusion_tools import create_document
+from .wingtool.fusion_tools import create_document, create_project
 
 def parse_plane(acjson):
     with open(acjson, "r") as f:
         data = load(f)
-    #data["panels"][0]["otbd"]["chord"] = 250.0
+    #data["panels"][0]["dihedral"] = 10.0
+    #data["panels"][0]["otbd"]["incidence"] = 5.0
     #data["panels"][0]["otbd"]["airfoil"] = "dae21-il"
-    #
-    #data["panels"][0]["inbd"]["chord"] = 300.0
+    ##
+    ##data["panels"][0]["inbd"]["chord"] = 300.0
     #data["panels"][0]["inbd"]["airfoil"] = "defcnd1-il"
     return Plane.create(**data)
 
@@ -40,18 +41,15 @@ def run(context):
 
         plane = parse_plane(Path(__file__).parent / "aircraft.json")
         
-        #doc = create_document("test_plane")
-        doc = app.activeDocument
-        plane.create_fusion(doc)
+        proj = create_project("test_plane")
+        
+        #doc = app.activeDocument
+        plane.create_fusion(proj)
 
 
-        ui.activeSelections.add(plane.component)
-        ui.commandDefinitions.itemById('FindInWindow').execute()
+        #ui.activeSelections.add(plane.component)
+        #ui.commandDefinitions.itemById('FindInWindow').execute()
         
-        pass
-        
-        
-
     except:
         if ui:
             ui.messageBox('Failed://n{}'.format(traceback.format_exc()))
