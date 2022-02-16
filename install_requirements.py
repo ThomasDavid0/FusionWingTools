@@ -17,5 +17,5 @@ def pip_install(required):
 def setup_install(paths):
 
     for path in paths:
-        sys.path.append(path)
+        sys.path.append(str(path))
             
