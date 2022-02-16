@@ -11,12 +11,11 @@ def full_obj_collection(values):
 
 
 def get_or_create_project(name):
-    p = get_project(name)
+    p = get_item(name, app.data.dataProjects)
     if not p:
         return create_project(name)
     else:
         return p
-
 
 def create_project(name):
     existing_projects = [p.name for p in app.data.dataProjects]
@@ -25,18 +24,26 @@ def create_project(name):
     return app.data.dataProjects.add(safename)
 
 
-def get_project(name):
-    for p in app.data.dataProjects:
-        if p.name==name:
-            return p
-
-
 def get_or_create_document(name, folder):
-    p = get_document(name, folder)
+    p = get_item(name, folder.dataFiles)
     if not p:
         return create_document(name, folder)
     else:
+        return app.documents.open(p)
+
+
+def get_or_create_folder(name, folder):
+    p = get_item(name, folder.dataFolders)
+    if not p:
+        return create_folder(name, folder)
+    else:
         return p
+
+def create_folder(name, folder):
+    existing_folders = [f.name for f in folder.dataFolders]
+    safename = getsafename(name, lambda n: not n in existing_folders)
+    return folder.dataFolders.add(safename)
+
 
 def create_document(name, folder = None):
     doc = app.documents.add(0)
@@ -45,30 +52,21 @@ def create_document(name, folder = None):
         doc.saveAs(name, folder, "initial empty document", "")
     return doc
 
-def get_document(name, folder):
-    for doc in folder.dataFiles:
-        if doc.name==name:
+def get_item(name, items):
+    for doc in items:
+        if name in doc.name:
             return doc
 
     
 def get_or_create_component(parent, name: str, transform: Transformation):
-    
     occ = parent.occurrences.itemByName(f"{name}:1")
     if occ is None:
         occ =  parent.occurrences.addNewComponent(transform.fusion_matrix3d())
         occ.component.name = name
     else:
-        #occ2 = app.activeDocument.design.rootComponent.allOccurrences.itemByName(occ.name)
 
-        #parentocc = app.activeDocument.design.rootComponent.allOccurrences.itemByName(f"{parent.name}:1")
-        #if not parentocc is None:
-        #    occ = occ.createForAssemblyContext(parentocc)
-#
         occ.transform2 = transform.fusion_matrix3d()
-        
-        #print(np.array(occ2.transform2.asArray()) - np.array(transform.fusion_matrix3d().asArray()))
-
-            
+                   
     return occ
 
 def get_or_create_sketch(parent, name, plane, force_create=False):
