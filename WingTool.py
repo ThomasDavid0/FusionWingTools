@@ -14,23 +14,26 @@ setup_install([
     ])
 
 
-from acdesign.aircraft import Plane
+from acdesign.aircraft import Plane, Rib
 
 
-from .wingtool import tag_methods
+from .wingtool import tag_methods, update_panel_doc
 tag_methods()
-from .wingtool.fusion_tools import create_document, create_project, get_item
+from .wingtool.fusion_tools import create_document, create_project, get_item, get_selected
 
 def parse_plane(acjson):
     with open(acjson, "r") as f:
         data = load(f)
-    #data["panels"][0]["dihedral"] = 10.0
-   # data["panels"][0]["otbd"]["incidence"] = 5.0
-   # data["panels"][0]["otbd"]["airfoil"] = "dae21-il"
+    data["panels"][0]["dihedral"] = 10.0
+    data["panels"][0]["otbd"]["incidence"] = 5.0
+    data["panels"][0]["otbd"]["airfoil"] = "dae21-il"
     #
-    #data["panels"][0]["inbd"]["chord"] = 300.0
-   # data["panels"][0]["inbd"]["airfoil"] = "defcnd1-il"
+    data["panels"][0]["inbd"]["chord"] = 300.0
+    data["panels"][0]["inbd"]["airfoil"] = "defcnd1-il"
     return Plane.create(**data)
+
+
+
 
 
 def run(context):
@@ -39,12 +42,15 @@ def run(context):
         app = adsk.core.Application.get()
         ui  = app.userInterface
 
-        plane = parse_plane(Path(__file__).parent / "aircraft.json")
+        update_panel_doc(app.activeDocument)
+        
+        
+        #plane = parse_plane(Path(__file__).parent / "aircraft.json")
         
         #proj = create_project("test_plane")
-        proj = get_item("test_plane", app.data.dataProjects)
+        #proj = get_item("test_plane", app.data.dataProjects)
         #doc = app.activeDocument
-        plane.create_fusion(proj)
+        #plane.create_fusion(proj)
 
 
         #ui.activeSelections.add(plane.component)

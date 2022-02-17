@@ -7,7 +7,7 @@ import numpy as np
 
 def create_matrix3d(self: Transformation):
     matr =  adsk.core.Matrix3D.create()
-    matd = self.to_matrix().T.tolist()
+    matd = (self * 0.1).to_matrix().T.tolist()
 
     if matr.setWithArray(list(chain(*matd))):
         return matr
@@ -24,7 +24,7 @@ def parse_matrix3d(mat3d) -> Transformation:
     )
 
 def create_sketch_point(self: Point):
-    return adsk.core.Point3D.create(*self.to_list())
+    return adsk.core.Point3D.create(*(self * 0.1).to_list())
 
 
 def create_sketch_points(self: Points):

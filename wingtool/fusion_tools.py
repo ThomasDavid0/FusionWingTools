@@ -58,14 +58,14 @@ def get_item(name, items):
             return doc
 
     
-def get_or_create_component(parent, name: str, transform: Transformation):
+def get_or_create_component(parent, name: str, transform: Transformation=None):
     occ = parent.occurrences.itemByName(f"{name}:1")
     if occ is None:
         occ =  parent.occurrences.addNewComponent(transform.fusion_matrix3d())
         occ.component.name = name
     else:
-
-        occ.transform2 = transform.fusion_matrix3d()
+        if transform is not None:
+            occ.transform = transform.fusion_matrix3d()
                    
     return occ
 
@@ -86,3 +86,8 @@ def getsafename(name, namecheckfunc):
         if namecheckfunc(checkname):
             return checkname
         i += 1
+
+def get_selected(obj_type):
+    for obj in app.userInterface.activeSelections:
+        if obj.entity.objectType.split("::")[-1] == obj_type:
+            return obj.entity
