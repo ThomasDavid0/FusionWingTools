@@ -27,6 +27,7 @@ def create_sketch_point(self: Point):
     return adsk.core.Point3D.create(*(self * 0.1).to_list())
 
 
+
 def create_sketch_points(self: Points):
     return full_obj_collection([create_sketch_point(p) for p in self])
 

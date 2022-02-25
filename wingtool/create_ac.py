@@ -1,44 +1,105 @@
 
 from acdesign.aircraft import Plane, Panel, Rib
-from .fusion_tools import get_or_create_component, get_or_create_document, get_or_create_sketch, get_or_create_folder, get_item
-from geometry import Points, Point, Quaternion
-import adsk.core
+from .fusion_tools import Component, Document, Sketch, Folder, Parameters, Occurence, Spline, Line, JointOrigin, Joint
+from geometry import Points, Point, Quaternion, Transformation
+import adsk.core, adsk.fusion
 from time import sleep
 app = adsk.core.Application.get()
 
+#name, value, units, comment
+panelparams = [
+    ("length",                      30.0,   "mm",   ""),
+    ("desired_root_chord",          15.0,   "mm",   ""),
+    ("desired_tip_chord",           10.0,   "mm",   ""),
+    ("root_incidence",              0.0,    "deg",  ""),
+    ("tip_incidence",               0.0,    "deg",  ""),
+    ("le_sweep",                    2.5,    "mm",   ""),
+    ("mean_chord_prop",             0.25,   "",     ""),
+    ("desired_root_section",        1.0,    "",     "b540ols-il"),
+    ("desired_tip_section",         2.0,    "",     "b540ols-il"),
+    ("desired_root_te_thickness",   0.05,   "mm",   ""),
+    ("desired_tip_te_thickness",    0.05,   "mm",   ""),
+]
 
-def create_spline(points: Points, sketch):
-    spline_points = (points * Point(1, -1, 0)).fusion_sketch()
-    spline = sketch.sketchCurves.sketchFittedSplines.add(spline_points)
+
+def create_pdrib(doc, location: str, uparms: dict):
     
-    try:
-        old_spline = sketch.sketchCurves.sketchFixedSplines[0]
-        base_profile = old_spline.replaceGeometry(spline.geometry)
-    except:
-        base_profile = sketch.sketchCurves.sketchFixedSplines.addByNurbsCurve(spline.geometry)    
-    spline.deleteMe()
-
-
-def update_pdrib(doc, location: str, uparms: dict):
-
-    occ = doc.design.rootComponent.occurrences.itemByName(f"{location}:1")
     rib = Rib.create(
         uparms[f"desired_{location}_section"].comment, 
         uparms[f"desired_{location}_chord"].value * 10,
         te_thickness=uparms[f"desired_{location}_te_thickness"].value * 10
     )
-    create_spline(rib.points ,occ.component.sketches.itemByName("base_profile"))
-    create_spline(rib.mean_camber() ,occ.component.sketches.itemByName("mean_camber"))
-    occ.component.modelParameters.itemByName(f"{location}_chord").value = uparms[f"desired_{location}_chord"].value
+    
+    occ = Component.get_or_create(doc.design.rootComponent, location, rib.transform)
+
+    base_sec_sketch = Sketch.get_or_create(occ.component, "base_profile", occ.component.xYConstructionPlane)
+    Spline.create(rib.points, base_sec_sketch)
+    Spline.create(rib.mean_camber() ,Sketch.get_or_create(occ.component, "mean_camber", occ.component.xYConstructionPlane))
+
+    if base_sec_sketch.sketchDimensions.count == 0:
+        line = Line.create(Point.zeros(), Point(rib.chord, 0, 0), base_sec_sketch)
+        dim = base_sec_sketch.sketchDimensions.addDistanceDimension(
+            line.startSketchPoint, 
+            line.endSketchPoint, 
+            1, 
+            Point(rib.chord / 2, 20, 0).fusion_sketch()
+        )
+        dim.parameter.name = f"{location}_chord"
+    else:
+        chord = Parameters.find(f"{location}_chord", occ.component.modelParameters)
+        chord.value = uparms[f"desired_{location}_chord"].value
+
+    return occ.component
+
+    
+   # if not chord:
+   #     chord = Parameters.create(occ.component.modelParameters,f"{location}_chord", rib.chord / 10, "mm", "")
+   # else:
+   #     
     
 
-def update_panel_doc(doc):
-    uparms = {param.name: param for param in doc.design.userParameters}    
-    update_pdrib(doc, "root", uparms)
-    update_pdrib(doc, "tip", uparms)
+def create_panel_doc(doc):
+    uparms = Parameters.get_dict(doc.design.userParameters)
+    for p in panelparams:
+        if not p[0] in uparms.keys():
+            Parameters.create(doc.design.userParameters, *p)
+    uparms = Parameters.get_dict(doc.design.userParameters)
+    comp=doc.design.rootComponent
+    incidence = JointOrigin.get_or_create(
+        "incidence",
+        comp, 
+        comp.originConstructionPoint, 
+        comp.yConstructionAxis, 
+        comp.xConstructionAxis
+    )
+    dihedral = JointOrigin.get_or_create(
+        "dihedral",
+        comp, 
+        comp.originConstructionPoint, 
+        comp.xConstructionAxis, 
+        comp.yConstructionAxis
+    )
 
+    root=create_pdrib(doc, "root", uparms)
+    tip=create_pdrib(doc, "tip", uparms)
 
+    rootjoint = Joint.create(
+        "root", 
+        comp,
+        adsk.fusion.JointGeometry.createByPoint(root.originConstructionPoint), 
+        incidence, 
+        Point.zeros(),
+        uparms["root_incidence"].value
+    )
 
+    tipjoint = Joint.create(
+        "tip", 
+        comp,
+        adsk.fusion.JointGeometry.createByPoint(tip.originConstructionPoint), 
+        incidence, 
+        Point(uparms["le_sweep"].value, 0.0, uparms["length"].value),
+        uparms["tip_incidence"].value
+    )
 
 
 

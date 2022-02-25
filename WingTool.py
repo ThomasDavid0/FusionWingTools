@@ -15,11 +15,11 @@ setup_install([
 
 
 from acdesign.aircraft import Plane, Rib
+from .wingtool.fusion_tools import Document, Parameters, JointOrigin
 
-
-from .wingtool import tag_methods, update_panel_doc
+from .wingtool import tag_methods, create_panel_doc
 tag_methods()
-from .wingtool.fusion_tools import create_document, create_project, get_item, get_selected
+
 
 def parse_plane(acjson):
     with open(acjson, "r") as f:
@@ -33,18 +33,24 @@ def parse_plane(acjson):
     return Plane.create(**data)
 
 
-
-
-
 def run(context):
     ui = None
     try:
         app = adsk.core.Application.get()
         ui  = app.userInterface
+        #comp = app.activeDocument.design.rootComponent
+        
+        ##uparms = Parameters.get_dict(app.activeDocument.design.userParameters)
+        #pass
+        #update_panel_doc(app.activeDocument)
+        doc = Document.create("test")
+        #doc=app.activeDocument
 
-        update_panel_doc(app.activeDocument)
         
-        
+        pass
+
+        create_panel_doc(doc)
+#        pass
         #plane = parse_plane(Path(__file__).parent / "aircraft.json")
         
         #proj = create_project("test_plane")
