@@ -13,13 +13,4 @@ def tag_methods():
     Points.fusion_sketch = create_sketch_points
 
     Transformation.from_matrix3d = parse_matrix3d
-   
-   
-    Rib.create_fusion = create_rib
-    Panel.create_fusion = create_panel
-    Plane.create_fusion = create_plane
-
-   
-    Rib.map_fusion = map_fusion_rib
-    Panel.map_fusion = map_fusion_panel
-    Plane.map_fusion = map_fusion_plane
+      

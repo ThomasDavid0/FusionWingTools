@@ -3,6 +3,8 @@ app = adsk.core.Application.get()
 from geometry import Transformation, Points, Point
 import numpy as np
 import warnings
+from typing import Union, List
+
 
 def full_obj_collection(values):
     coll = adsk.core.ObjectCollection.create()
@@ -121,19 +123,22 @@ class Parameters:
     def get_dict(location):
         return {param.name: param for param in location}  
 
-    def find(name, location):
+    def find(name, location: Union[adsk.fusion.ModelParameters, adsk.fusion.UserParameters]) -> adsk.fusion.Parameter:
         return location.itemByName(name)
 
-    def create(location, name, value, units, comment):
+    def set_or_create(location: adsk.fusion.Component, name, value, units, comment) -> adsk.fusion.Parameter:
         parm = Parameters.find(name, location)
         if parm:
             if not parm.unit == units:
                 warnings.warn("cant do parameter unit change here")
             parm.value = value
+            parm.comment = comment
         else:
-            location.add(name, adsk.core.ValueInput.createByReal(value), units, comment)
+            parm = location.add(name, adsk.core.ValueInput.createByReal(value), units, comment)
+        return parm 
 
-    
+    def get_created_by(creator: adsk.core.Base, location: adsk.fusion.Component) -> List[adsk.fusion.Parameter]:
+        return [p  for p in location if p.createdBy == creator] 
 
 class Spline:
     @staticmethod
@@ -177,18 +182,20 @@ class JointOrigin:
         return location.jointOrigins.itemByName(name)
     
     @staticmethod
-    def create(name, location, origin, zaxis, xaxis):
-        jorigin = location.jointOrigins.add(
-            location.jointOrigins.createInput(
+    def create(name, location: adsk.fusion.Component, origin, zaxis, xaxis):
+        joi = location.jointOrigins.createInput(
                 adsk.fusion.JointGeometry.createByPoint(
                     origin
             ))
+
+        joi.xAxisEntity = xaxis
+        joi.zAxisEntity = zaxis
+        
+        jorigin = location.jointOrigins.add(
+            joi
         )
-        jorigin.timelineObject.rollTo(True)
-        jorigin.zAxisEntity = zaxis
-        jorigin.xAxisEntity = xaxis
-        location.parentDesign.timeline.moveToEnd()
         jorigin.name = name
+        return jorigin
 
     @staticmethod
     def get_or_create(name, location, origin, zaxis, xaxis):
@@ -204,16 +211,30 @@ class Joint:
         return location.joints.itemByName(name)
     
     @staticmethod
-    def create(name, location, o1, o2, off: Point, rott: float):
+    def create(name, location: adsk.fusion.Component, o1, o2):
         ji=location.joints.createInput(o1, o2)
         ji.setAsRigidJointMotion()
-        ji.offset = adsk.core.ValueInput.createByObject(off.fusion_sketch())
-        ji.angle =  adsk.core.ValueInput.createByReal(rott)
-        j = location.joints.add(ji)
+        #ji.offset = adsk.core.ValueInput.createByObject(off.fusion_sketch())
+        #ji.angle =  adsk.core.ValueInput.createByReal(rott)
+        j= location.joints.add(ji)
+        j.name = name
+        return j
 
     @staticmethod
-    def get_or_create(name, location, o1, o2, off: Point, rott: float):
+    def get_or_create(name, location, o1, o2):
         jo = Joint.find(name, location)
         if jo:
             return jo
-        return Joint.create(name, location, o1, o2, off, rott)
+        return Joint.create(name, location, o1, o2)
+
+    @staticmethod
+    def modify(j: adsk.fusion.Joint, **kwargs):
+        parms = Parameters.get_created_by(j, j.parentComponent.modelParameters)
+        for p in parms:
+            for key, value in kwargs.items():
+                if key in p.role.lower():
+                    p.expression = value
+                    break
+        return j
+        
+

@@ -4,25 +4,32 @@ from .fusion_tools import Component, Document, Sketch, Folder, Parameters, Occur
 from geometry import Points, Point, Quaternion, Transformation
 import adsk.core, adsk.fusion
 from time import sleep
+from typing import List, Tuple, Dict
+import numpy as np
 app = adsk.core.Application.get()
 
-#name, value, units, comment
-panelparams = [
-    ("length",                      30.0,   "mm",   ""),
-    ("desired_root_chord",          15.0,   "mm",   ""),
-    ("desired_tip_chord",           10.0,   "mm",   ""),
-    ("root_incidence",              0.0,    "deg",  ""),
-    ("tip_incidence",               0.0,    "deg",  ""),
-    ("le_sweep",                    2.5,    "mm",   ""),
-    ("mean_chord_prop",             0.25,   "",     ""),
-    ("desired_root_section",        1.0,    "",     "b540ols-il"),
-    ("desired_tip_section",         2.0,    "",     "b540ols-il"),
-    ("desired_root_te_thickness",   0.05,   "mm",   ""),
-    ("desired_tip_te_thickness",    0.05,   "mm",   ""),
-]
+deg = np.degrees
+
+panel_fusion_mapping = {
+    "length":                    lambda p : (0.1 * p.semispan,                             "mm",  ""),
+    "desired_root_chord":        lambda p : (0.1 * p.inbd.chord,                           "mm",  ""),
+    "desired_tip_chord":         lambda p : (0.1 * p.otbd.chord,                           "mm",  ""),
+    "root_incidence":            lambda p : (p.inbd.incidence + p.incidence,               "rad", ""),
+    "tip_incidence":             lambda p : (p.otbd.incidence + p.incidence,               "rad", ""),
+    "le_sweep":                  lambda p : (0.1 * p.le_sweep_distance,                    "mm",  ""),
+    "mean_chord_prop":           lambda p : (0.25,                                         "",    ""),
+    "desired_root_section":      lambda p : (0,                                            "",    p.inbd.name),
+    "desired_tip_section":       lambda p : (0,                                            "",    p.otbd.name),
+    "desired_root_te_thickness": lambda p : (0.1 * p.inbd.te_thickness,                    "mm",  ""),
+    "desired_tip_te_thickness":  lambda p : (0.1 * p.otbd.te_thickness,                    "mm",  ""),
+}
 
 
-def create_pdrib(doc, location: str, uparms: dict):
+def dump_fusion_panel_parameters(p: Panel, target: adsk.fusion.UserParameters) -> Dict[str, adsk.fusion.Parameter]:
+    return {key: Parameters.set_or_create(target, key, *value(p)) for key, value in panel_fusion_mapping.items()}
+
+
+def create_or_update_rib(doc, location: str, uparms: dict):
     
     rib = Rib.create(
         uparms[f"desired_{location}_section"].comment, 
@@ -52,18 +59,15 @@ def create_pdrib(doc, location: str, uparms: dict):
     return occ.component
 
     
-   # if not chord:
-   #     chord = Parameters.create(occ.component.modelParameters,f"{location}_chord", rib.chord / 10, "mm", "")
-   # else:
-   #     
+def create_or_update_panel(doc: adsk.core.Document, p: Panel=None):
     
-
-def create_panel_doc(doc):
-    uparms = Parameters.get_dict(doc.design.userParameters)
-    for p in panelparams:
-        if not p[0] in uparms.keys():
-            Parameters.create(doc.design.userParameters, *p)
-    uparms = Parameters.get_dict(doc.design.userParameters)
+    if p is None:
+        uparms = Parameters.get_dict(doc.design.userParameters)
+        if not all([key in uparms.keys() for key in panel_fusion_mapping.keys()]):
+            raise AttributeError("no Panel passed and some panel parameters missing in target document")
+    else:
+        uparms = dump_fusion_panel_parameters(p, doc.design.userParameters)
+    
     comp=doc.design.rootComponent
     incidence = JointOrigin.get_or_create(
         "incidence",
@@ -80,26 +84,56 @@ def create_panel_doc(doc):
         comp.yConstructionAxis
     )
 
-    root=create_pdrib(doc, "root", uparms)
-    tip=create_pdrib(doc, "tip", uparms)
+    root=create_or_update_rib(doc, "root", uparms)
+    tip=create_or_update_rib(doc, "tip", uparms)
 
-    rootjoint = Joint.create(
-        "root", 
-        comp,
-        adsk.fusion.JointGeometry.createByPoint(root.originConstructionPoint), 
-        incidence, 
+    rootjoint = Joint.modify(
+        Joint.get_or_create(
+            "root", 
+            comp,
+            adsk.fusion.JointGeometry.createByPoint(root.originConstructionPoint), 
+            incidence
+        ), 
+        angle=uparms["root_incidence"].name
+    )
+
+    tipjoint = Joint.modify(
+        Joint.get_or_create(
+            "tip", 
+            comp,
+            adsk.fusion.JointGeometry.createByPoint(tip.originConstructionPoint), 
+            incidence
+        ), 
+        x=uparms["le_sweep"].name,
+        z=uparms["length"].name, 
+        angle=uparms["tip_incidence"].name
+    )
+
+
+
+
+def parse_fusion_panel_parms(doc: adsk.core.Document) -> Panel:
+    parms = Parameters.get_dict(doc.design.userParameters)
+    return Panel.create(
+        doc.name,
         Point.zeros(),
-        uparms["root_incidence"].value
+        0.0,
+        0.0,
+        False,
+        {
+            parms["desired_root_section"].coment, 
+            parms["desired_root_chord"].value * 10, 
+            parms["desired_root_te_thickness"].value * 10
+        },
+        {
+            parms["desired_tip_section"].coment, 
+            parms["desired_tip_chord"].value * 10, 
+            parms["desired_tip_te_thickness"].value * 10
+        },
+        parms["le_sweep"].value * 10,
+        parms["length"].value * 10
     )
 
-    tipjoint = Joint.create(
-        "tip", 
-        comp,
-        adsk.fusion.JointGeometry.createByPoint(tip.originConstructionPoint), 
-        incidence, 
-        Point(uparms["le_sweep"].value, 0.0, uparms["length"].value),
-        uparms["tip_incidence"].value
-    )
 
 
 
@@ -108,74 +142,3 @@ def create_panel_doc(doc):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-def create_rib(self: Rib, parent, name: str):
-    occurrence = get_or_create_component(parent, name,  self.transform)
-    self.component = occurrence.component
-    sketch = get_or_create_sketch(self.component, self.name, self.component.xYConstructionPlane, True)
-    
-    spline_points = (self.points * Point(1, -1, 0)).fusion_sketch()
-    spline = sketch.sketchCurves.sketchFittedSplines.add(spline_points)
-    
-    self.base_sketch = get_or_create_sketch(self.component, "base_profile", self.component.xYConstructionPlane)
-
-    try:
-        old_spline = self.base_sketch.sketchCurves.sketchFixedSplines[0]
-        self.base_profile = old_spline.replaceGeometry(spline.geometry)
-    except:
-        self.base_profile = self.base_sketch.sketchCurves.sketchFixedSplines.addByNurbsCurve(spline.geometry)    
-    sketch.deleteMe()
-    
-
-    #line = sketch.sketchCurves.sketchLines.addByTwoPoints(spline_points[0], spline_points[-1])
-
-
-def create_panel(self: Panel, folder):
-    doc = get_or_create_document(self.name, folder)
-    doc.activate()
-    self.inbd.create_fusion(doc.design.rootComponent, "inbd")
-    self.otbd.create_fusion(doc.design.rootComponent, "otbd")
-    doc.save("created wing")
-    return doc
-    
-
-def create_plane(self: Plane, proj):
-    folder = get_or_create_folder("OML", proj.rootFolder)
-    doc = get_or_create_document("aircraft", folder)
-
-    self.component = doc.design.rootComponent
-
-    #doc.design.activateRootComponent()
-    for panel in self.panels:
-        paneldoc = panel.create_fusion(folder)
-        
-        doc.activate()
-        
-        gotocc=False
-        occ = get_item(panel.name, self.component.occurrences)
-
-        adsk.doEvents()
-        sleep(1.0)
-
-        if not occ:
-            panel.occurence = self.component.occurrences.addByInsert(
-                paneldoc.dataFile,
-                panel.transform.fusion_matrix3d(), 
-                True
-            )
-        else:
-            pass
-            #app.userInterface.activeSelections.add(panel.occurence)
-            #app.userInterface.commandDefinitions.itemById('FindInWindow').execute()
-        doc.save("panel added")
