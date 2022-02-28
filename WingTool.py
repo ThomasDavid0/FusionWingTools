@@ -17,7 +17,7 @@ setup_install([
 from acdesign.aircraft import Plane, Rib
 from .wingtool.fusion_tools import Document, Parameters, JointOrigin
 
-from .wingtool import tag_methods, create_or_update_panel
+from .wingtool import tag_methods
 tag_methods()
 
 
@@ -33,39 +33,20 @@ def parse_plane(acjson):
     #data["panels"][0]["inbd"]["incidence"] = -5
     return Plane.create(**data)
 
-
 def run(context):
     ui = None
     try:
         app = adsk.core.Application.get()
         ui  = app.userInterface
-        #comp = app.activeDocument.design.rootComponent
+
+
         
-        ##uparms = Parameters.get_dict(app.activeDocument.design.userParameters)
-        #pass
-        #update_panel_doc(app.activeDocument)
-        #doc = Document.create("test")
         plane = parse_plane(Path(__file__).parent / "aircraft.json")
-
-
-
         doc=app.activeDocument
+        plane.panels[0].dump_fusion(doc, plane.panels[0])
 
-        
-
-        create_or_update_panel(doc, plane.panels[0])
-#        pass
-        #
-        
-        #proj = create_project("test_plane")
-        #proj = get_item("test_plane", app.data.dataProjects)
-        #doc = app.activeDocument
-        #plane.create_fusion(proj)
-
-
-        #ui.activeSelections.add(plane.component)
-        #ui.commandDefinitions.itemById('FindInWindow').execute()
         
     except:
         if ui:
             ui.messageBox('Failed://n{}'.format(traceback.format_exc()))
+
