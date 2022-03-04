@@ -35,7 +35,7 @@ def get_selected(obj_type):
 
 class Project:
     @staticmethod
-    def get_or_create(name):
+    def get_or_create(name: str) -> adsk.core.DataProject:
         p = Project.find(name)
         if not p:
             return Project.create(name)
@@ -43,7 +43,7 @@ class Project:
             return p
 
     @staticmethod
-    def create(name):
+    def create(name: str) -> adsk.core.DataProject:
         existing_projects = [p.name for p in app.data.dataProjects]
         safename = getsafename(name, lambda n: not n in existing_projects)
 
@@ -126,7 +126,7 @@ class Parameters:
     def find(name, location: Union[adsk.fusion.ModelParameters, adsk.fusion.UserParameters]) -> adsk.fusion.Parameter:
         return location.itemByName(name)
 
-    def set_or_create(location: adsk.fusion.Component, name, value, units, comment) -> adsk.fusion.Parameter:
+    def set_or_create(location: adsk.core.Base, name, value, units, comment) -> adsk.fusion.Parameter:
         parm = Parameters.find(name, location)
         if parm:
             if not parm.unit == units:
@@ -174,7 +174,11 @@ class Occurence:
     def find(name, location):
         return location.occurrences.itemByName(name)
 
-
+    @staticmethod
+    def find_by_component(name, location):
+        for occ in location.occurrences:
+            if name in occ.component.name:
+                return occ
 
 class JointOrigin:
     @staticmethod
@@ -182,7 +186,7 @@ class JointOrigin:
         return location.jointOrigins.itemByName(name)
     
     @staticmethod
-    def create(name, location: adsk.fusion.Component, origin, zaxis, xaxis):
+    def create(name, location: adsk.fusion.Component, origin, zaxis, xaxis, isFlipped=False):
         joi = location.jointOrigins.createInput(
                 adsk.fusion.JointGeometry.createByPoint(
                     origin
@@ -190,7 +194,7 @@ class JointOrigin:
 
         joi.xAxisEntity = xaxis
         joi.zAxisEntity = zaxis
-        
+        joi.isFlipped = isFlipped
         jorigin = location.jointOrigins.add(
             joi
         )
@@ -198,11 +202,11 @@ class JointOrigin:
         return jorigin
 
     @staticmethod
-    def get_or_create(name, location, origin, zaxis, xaxis):
+    def get_or_create(name, location, origin, zaxis, xaxis, isFlipped=False):
         jo = JointOrigin.find(name, location)
         if jo:
             return jo
-        return JointOrigin.create(name, location, origin, zaxis, xaxis)
+        return JointOrigin.create(name, location, origin, zaxis, xaxis, isFlipped)
 
 
 class Joint:

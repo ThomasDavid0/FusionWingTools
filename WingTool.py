@@ -9,13 +9,15 @@ from pathlib import Path
 pip_install(["numpy", "pandas", "scipy"])
 
 setup_install([
-    Path(__file__).parent / "_submodules/geometry", 
-    Path(__file__).parent / "_submodules/AircrafDesign"
+    Path(__file__).parent / "geometry", 
+    Path(__file__).parent / "AircrafDesign"
     ])
 
 
 from acdesign.aircraft import Plane, Rib
-from .wingtool.fusion_tools import Document, Parameters, JointOrigin
+from .wingtool.fusion_tools import Document, Parameters, JointOrigin, Project
+from .wingtool.fusion_aircraft import create_plane
+
 
 from .wingtool import tag_methods
 tag_methods()
@@ -24,13 +26,7 @@ tag_methods()
 def parse_plane(acjson):
     with open(acjson, "r") as f:
         data = load(f)
-    #data["panels"][0]["dihedral"] = 10.0
-    #data["panels"][0]["otbd"]["incidence"] = 5.0
-    #data["panels"][0]["otbd"]["airfoil"] = "dae21-il"
-    ###
-    #data["panels"][0]["inbd"]["chord"] = 300.0
-    #data["panels"][0]["inbd"]["airfoil"] = "defcnd1-il"
-    #data["panels"][0]["inbd"]["incidence"] = -5
+
     return Plane.create(**data)
 
 def run(context):
@@ -39,11 +35,16 @@ def run(context):
         app = adsk.core.Application.get()
         ui  = app.userInterface
 
+               
+        plane = parse_plane(Path(__file__).parent / "examples/BUDDISingle.json")
+        #
+        proj = Project.get_or_create("test1")
+        #proj = app.data.dataProjects.getByNatest")
+#
+        create_plane(proj, plane)
 
-        
-        plane = parse_plane(Path(__file__).parent / "aircraft.json")
-        doc=app.activeDocument
-        plane.panels[0].dump_fusion(doc, plane.panels[0])
+        #doc=app.activeDocument
+        #plane.panels[0].dump_fusion(doc, plane.panels[0])
 
         
     except:

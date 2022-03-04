@@ -30,6 +30,7 @@ def dump_fusion_panel_parameters(p: Panel, target: adsk.fusion.UserParameters) -
     return {key: Parameters.set_or_create(target, key, *value(p)) for key, value in panel_fusion_mapping.items()}
 
 
+
 def create_or_update_panel(doc: adsk.core.Document, p: Panel=None):
     
     if p is None:
@@ -52,9 +53,10 @@ def create_or_update_panel(doc: adsk.core.Document, p: Panel=None):
         comp, 
         comp.originConstructionPoint, 
         comp.xConstructionAxis, 
-        comp.yConstructionAxis
+        comp.yConstructionAxis,
+        True
     )
-
+    
     root=create_or_update_rib(doc, "root", uparms)
     tip=create_or_update_rib(doc, "tip", uparms)
 

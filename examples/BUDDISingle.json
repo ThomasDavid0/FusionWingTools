@@ -1,0 +1,84 @@
+{
+    "version": 0.01,
+    "name": "BUDDISingle",
+    "panels": [
+        {
+            "name": "wing",
+            "acpos": {"x":-300,"y": 0,"z": 0},
+            "dihedral": 5.0,
+            "incidence": 0.0,
+            "symm": "y",
+            "length": 900,
+            "sweep": 75,
+            "inbd": {
+                "airfoil": "s3021-il",
+                "chord": 225,
+                "te_thickness": 2,
+                "incidence": 0.0
+            },
+            "otbd": {
+                "airfoil": "s3021-il",
+                "chord": 150,
+                "te_thickness": 2,
+                "incidence": 0.0
+            }
+        },
+        {
+            "name": "htail",
+            "acpos": {"x":-900,"y": 0,"z": 0},
+            "dihedral": 0.0,
+            "incidence": 0.0,
+            "symm": "y",
+            "length": 350,
+            "sweep": 50,
+            "inbd": {
+                "airfoil": "e230-il",
+                "chord": 150,
+                "te_thickness": 2,
+                "incidence": 0.0
+            },
+            "otbd": {
+                "airfoil": "e230-il",
+                "chord": 100,
+                "te_thickness": 2,
+                "incidence": 0.0
+            }
+        },
+        {
+            "name": "fin",
+            "acpos": {"x":-900,"y": 0,"z": 0},
+            "dihedral": 90.0,
+            "incidence": 0.0,
+            "symm": "z",
+            "length": 300,
+            "sweep": 50,
+            "inbd": {
+                "airfoil": "e230-il",
+                "chord": 150,
+                "te_thickness": 2,
+                "incidence": 0.0
+            },
+            "otbd": {
+                "airfoil": "e230-il",
+                "chord": 100,
+                "te_thickness": 2,
+                "incidence": 0.0
+            }
+        }
+
+    ],
+    "bodies": [],
+    "masses": [
+        {
+            "name": "total",
+            "cg": {"x":-511,"y": 0,"z": 0},
+            "mass": 4.6,
+            "inertia": [
+                [1, 0, 0],
+                [0, 1, 0],
+                [0, 0, 1]
+            ]
+
+        }
+    ]
+}
