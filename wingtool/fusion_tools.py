@@ -4,7 +4,7 @@ from geometry import Transformation, Points, Point
 import numpy as np
 import warnings
 from typing import Union, List
-
+from time import sleep
 
 def full_obj_collection(values):
     coll = adsk.core.ObjectCollection.create()
@@ -15,7 +15,7 @@ def full_obj_collection(values):
 
 def get_item(name, items):
     for doc in items:
-        if name in doc.name:
+        if name == doc.name:
             return doc
 
 
@@ -92,7 +92,7 @@ class Folder:
 
 class Component:
     @staticmethod
-    def get_or_create(parent, name: str, transform: Transformation=None):
+    def get_or_create(parent, name: str, transform: Transformation=None) -> adsk.fusion.Occurrence:
         occ = parent.occurrences.itemByName(f"{name}:1")
         if occ is None:
             occ =  parent.occurrences.addNewComponent(transform.fusion_matrix3d())
@@ -177,9 +177,35 @@ class Occurence:
     @staticmethod
     def find_by_component(name, location):
         for occ in location.occurrences:
-            if name in occ.component.name:
-                return occ
+            if len(occ.component.name) >= len(name):
+                if name == occ.component.name[:len(name)]:
+                    return occ
 
+    @staticmethod
+    def insert_component(parent: adsk.fusion.Component, child: adsk.fusion.FusionDocument):
+        occ=None
+        i=0
+        while not occ:
+            occ = Occurence.find_by_component(child.design.rootComponent.name, parent)
+            if not occ is None or i > 5:
+                break
+            child.activate()
+            adsk.doEvents()
+            sleep(1)
+            parent.parentDesign.parentDocument.activate()
+            parent.parentDesign.parentDocument.save("pre panel insert")
+            sleep(1)
+            adsk.doEvents()
+            try:
+                occ = parent.occurrences.addByInsert(
+                    child.dataFile, 
+                    Transformation().fusion_matrix3d(), 
+                    True
+                )
+            except RuntimeError:
+                i+=1      
+
+        return occ
 class JointOrigin:
     @staticmethod
     def find(name, location):
@@ -242,3 +268,29 @@ class Joint:
         return j
         
 
+class Loft:
+    @staticmethod
+    def find(name, location: adsk.fusion.Component):
+        return location.features.loftFeatures.itemByName(name)
+    
+    @staticmethod
+    def create(name, location: adsk.fusion.Component, profiles: List[adsk.fusion.Profile]):
+        li = location.features.loftFeatures.createInput(
+            adsk.fusion.FeatureOperations.NewBodyFeatureOperation
+        )
+        for p in profiles:
+            li.loftSections.add(p)
+        li.isSolid=False
+        li.isTangentEdgesMerged=False
+        loft = location.features.loftFeatures.add(li)
+        loft.name = name
+        return name
+
+    @staticmethod
+    def get_or_create(name, location: adsk.fusion.Component, profiles: List[adsk.fusion.Profile]):
+        lo = Loft.find(name, location)
+        if not lo:
+            lo = Loft.create(name, location, profiles)
+        return lo
+
+    

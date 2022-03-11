@@ -16,7 +16,7 @@ setup_install([
 
 from acdesign.aircraft import Plane, Rib
 from .wingtool.fusion_tools import Document, Parameters, JointOrigin, Project
-from .wingtool.fusion_aircraft import create_plane
+from .wingtool.fusion_aircraft import FusionPlane
 
 
 from .wingtool import tag_methods
@@ -36,16 +36,13 @@ def run(context):
         ui  = app.userInterface
 
                
-        plane = parse_plane(Path(__file__).parent / "examples/BUDDISingle.json")
-        #
-        proj = Project.get_or_create("test1")
-        #proj = app.data.dataProjects.getByNatest")
+        plane = parse_plane(Path(__file__).parent / "examples/BUDDI_tilt.json")
+        
+        proj = Project.get_or_create("test6")
 #
-        create_plane(proj, plane)
+        fplane = FusionPlane(plane, proj)
 
-        #doc=app.activeDocument
-        #plane.panels[0].dump_fusion(doc, plane.panels[0])
-
+        pass
         
     except:
         if ui:

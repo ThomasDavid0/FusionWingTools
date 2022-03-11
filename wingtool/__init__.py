@@ -3,8 +3,8 @@ from geometry import Point, Points, Transformation, Quaternion
 from acdesign.aircraft import Plane, Panel, Rib
 
 from .create_geom import *
-from .fusion_rib import create_or_update_rib
-from .fusion_panel import create_or_update_panel, parse_fusion_panel_parms
+from .fusion_rib import parse_rib_parms
+from .fusion_panel import FusionPanel, parse_panel_parms, dump_panel_parameters
 from .mappers import *
 
 def tag_methods():
@@ -13,10 +13,11 @@ def tag_methods():
     Point.fusion_sketch = create_sketch_point
     Points.fusion_sketch = create_sketch_points
 
-    Transformation.from_matrix3d = parse_matrix3d
+    Transformation.from_matrix3d = staticmethod(parse_matrix3d)
     
-    Rib.dump_fusion = create_or_update_rib
+    Rib.parse_parameters = staticmethod(parse_rib_parms)
 
-    Panel.parse_fusion = parse_fusion_panel_parms
-    Panel.dump_fusion = create_or_update_panel
+    Panel.parse_fusion_parms = staticmethod(parse_panel_parms)
+    Panel.dump_fusion_parms = dump_panel_parameters
+
 

@@ -1,0 +1,147 @@
+{
+    "version": 0.01,
+    "name": "BUDDIV2",
+    "panels": [
+        {
+            "name": "wing_centre",
+            "acpos": {"x":-300,"y": 0,"z": 0},
+            "dihedral": 0.0,
+            "incidence": 0.0,
+            "symm": "y",
+            "length": 400,
+            "sweep": 0,
+            "inbd": {
+                "airfoil": "naca2410-il",
+                "chord": 300,
+                "te_thickness": 1.5,
+                "incidence": 0.0
+            },
+            "otbd": {
+                "airfoil": "naca2410-il",
+                "chord": 300,
+                "te_thickness": 1.5,
+                "incidence": 0.0
+            }
+        },
+        {
+            "name": "wing_outer",
+            "acpos": {"x":-300,"y": 400,"z": 0},
+            "dihedral": 0.0,
+            "incidence": 0.0,
+            "symm": "y",
+            "length": 1200,
+            "sweep": 50,
+            "inbd": {
+                "airfoil": "naca2410-il",
+                "chord": 300,
+                "te_thickness": 1.5,
+                "incidence": 0.0
+            },
+            "otbd": {
+                "airfoil": "naca2410-il",
+                "chord": 170,
+                "te_thickness": 1.5,
+                "incidence": 0.0
+            }
+        },
+        {
+            "name": "htail",
+            "acpos": {"x":-1000,"y": 0,"z": 0},
+            "dihedral": 0.0,
+            "incidence": 0.0,
+            "symm": "y",
+            "length": 400,
+            "sweep": 0,
+            "inbd": {
+                "airfoil": "e230-il",
+                "chord": 180,
+                "te_thickness": 1,
+                "incidence": 0.0
+            },
+            "otbd": {
+                "airfoil": "e230-il",
+                "chord": 180,
+                "te_thickness": 1,
+                "incidence": 0.0
+            }
+        },
+        {
+            "name": "htail_outer",
+            "acpos": {"x":-1000,"y": 400,"z": 0},
+            "dihedral": 0.0,
+            "incidence": 0.0,
+            "symm": "y",
+            "length": 200,
+            "sweep": 30,
+            "inbd": {
+                "airfoil": "e230-il",
+                "chord": 180,
+                "te_thickness": 1,
+                "incidence": 0.0
+            },
+            "otbd": {
+                "airfoil": "e230-il",
+                "chord": 150,
+                "te_thickness": 1,
+                "incidence": 0.0
+            }
+        },
+        {
+            "name": "fuspost",
+            "acpos": {"x":-300,"y": 400,"z": 0},
+            "dihedral": 90.0,
+            "incidence": 0.0,
+            "symm": "z",
+            "length": 310,
+            "sweep": 150,
+            "inbd": {
+                "airfoil": "e230-il",
+                "chord": 300,
+                "te_thickness": 1.5,
+                "incidence": 0.0
+            },
+            "otbd": {
+                "airfoil": "e230-il",
+                "chord": 150,
+                "te_thickness": 1.5,
+                "incidence": 0.0
+            }
+        },
+        {
+            "name": "fin",
+            "acpos": {"x":-1000,"y": 400,"z": 0},
+            "dihedral": 90.0,
+            "incidence": 0.0,
+            "symm": "z",
+            "length": 310,
+            "sweep": 0,
+            "inbd": {
+                "airfoil": "e230-il",
+                "chord": 180,
+                "te_thickness": 1.5,
+                "incidence": 0.0
+            },
+            "otbd": {
+                "airfoil": "e230-il",
+                "chord": 180,
+                "te_thickness": 1.5,
+                "incidence": 0.0
+            }
+        }
+
+    ],
+    "bodies": [],
+    "masses": [
+        {
+            "name": "total",
+            "cg": {"x":-511,"y": 0,"z": 0},
+            "mass": 4.6,
+            "inertia": [
+                [1, 0, 0],
+                [0, 1, 0],
+                [0, 0, 1]
+            ]
+
+        }
+    ]
+}

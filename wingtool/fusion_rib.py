@@ -11,34 +11,59 @@ import numpy as np
 app = adsk.core.Application.get()
 
 
-
-def create_or_update_rib(doc, location: str, uparms: dict):
-    
-    rib = Rib.create(
-        uparms[f"desired_{location}_section"].comment, 
-        uparms[f"desired_{location}_chord"].value * 10,
-        te_thickness=uparms[f"desired_{location}_te_thickness"].value * 10
+def parse_rib_parms(doc, location):
+    return Rib.create(
+        Parameters.find(f"desired_{location}_section", doc.design.userParameters).comment, 
+        Parameters.find(f"desired_{location}_chord", doc.design.userParameters).value * 10,
+        te_thickness=Parameters.find(f"desired_{location}_te_thickness", doc.design.userParameters).value * 10
     )
-    
-    occ = Component.get_or_create(doc.design.rootComponent, location, rib.transform)
 
-    base_sec_sketch = Sketch.get_or_create(occ.component, "base_profile", occ.component.xYConstructionPlane)
-    Spline.create(rib.points, base_sec_sketch)
-    Spline.create(rib.mean_camber() ,Sketch.get_or_create(occ.component, "mean_camber", occ.component.xYConstructionPlane))
 
-    if base_sec_sketch.sketchDimensions.count == 0:
-        line = Line.create(Point.zeros(), Point(rib.chord, 0, 0), base_sec_sketch)
-        dim = base_sec_sketch.sketchDimensions.addDistanceDimension(
-            line.startSketchPoint, 
-            line.endSketchPoint, 
-            1, 
-            Point(rib.chord / 2, 20, 0).fusion_sketch()
+class FusionRib:
+    def __init__(self, doc: adsk.core.Document, location: str):
+        self.doc=doc
+        self.location = location
+        
+        self.rib = Rib.parse_parameters(self.doc, location)
+        self.occ = Component.get_or_create(
+            self.doc.design.rootComponent, 
+            self.location, 
+            self.rib.transform
         )
-        dim.parameter.name = f"{location}_chord"
-    else:
-        chord = Parameters.find(f"{location}_chord", occ.component.modelParameters)
-        chord.value = uparms[f"desired_{location}_chord"].value
 
-    return occ.component
+        self.ocp = self.occ.component.originConstructionPoint
 
-    
+        self.base_sec_sketch = Sketch.get_or_create(
+            self.occ.component, 
+            "base_profile", 
+            self.occ.component.xYConstructionPlane
+        )
+
+        self.base_sec_spline = Spline.create(self.rib.points, self.base_sec_sketch)
+
+        self.mean_camber_sketch = Sketch.get_or_create(
+            self.occ.component, 
+            "mean_camber", 
+            self.occ.component.xYConstructionPlane
+        )
+
+        self.mean_camber_spline = Spline.create(self.rib.mean_camber(), self.mean_camber_sketch)
+
+        self.chord_parm = Parameters.find(f"{location}_chord", self.occ.component.modelParameters)
+        if self.chord_parm is None:
+            chord_line = Line.create(Point.zeros(), Point(self.rib.chord, 0, 0), self.base_sec_sketch)
+            dim = self.base_sec_sketch.sketchDimensions.addDistanceDimension(
+                chord_line.startSketchPoint, 
+                chord_line.endSketchPoint, 
+                1, 
+                Point(self.rib.chord / 2, 20, 0).fusion_sketch()
+            )
+            dim.parameter.name = f"{location}_chord"
+            self.chord_parm = Parameters.find(f"{location}_chord", self.occ.component.modelParameters)
+        else:
+            self.chord_parm.value = Parameters.find(
+                f"desired_{location}_chord", 
+                self.doc.design.userParameters
+            ).value
+
+        
