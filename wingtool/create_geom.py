@@ -1,6 +1,6 @@
 import adsk.core, adsk.fusion, adsk.cam, traceback
 
-from geometry import Transformation, Point, Points, Quaternion
+from geometry import Transformation, Point, Quaternion
 from itertools import chain
 from .fusion_tools import full_obj_collection
 import numpy as np
@@ -24,11 +24,10 @@ def parse_matrix3d(mat3d) -> Transformation:
     )
 
 def create_sketch_point(self: Point):
-    return adsk.core.Point3D.create(*(self * 0.1).to_list())
+    return adsk.core.Point3D.create(*(self * 0.1).data[0,:].tolist())
 
 
-
-def create_sketch_points(self: Points):
+def create_sketch_points(self: Point):
     return full_obj_collection([create_sketch_point(p) for p in self])
 
 

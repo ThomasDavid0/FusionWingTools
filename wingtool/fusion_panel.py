@@ -115,7 +115,7 @@ class PlacedPanel(FusionPanel):
             parms[direc] = Parameters.set_or_create(
                 self.parent.design.userParameters, 
                 f"panel_{self.panel.name}_{direc}",
-                getattr(self.panel, direc) / 10,
+                getattr(self.panel, direc)[0] / 10,
                 "mm",
                 self.panel.name,
             )

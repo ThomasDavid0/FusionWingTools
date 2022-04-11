@@ -1,5 +1,5 @@
 
-from geometry import Point, Points, Transformation, Quaternion
+from geometry import Point, Transformation, Quaternion
 from acdesign.aircraft import Plane, Panel, Rib
 
 from .create_geom import *
@@ -10,8 +10,9 @@ from .mappers import *
 def tag_methods():
     
     Transformation.fusion_matrix3d = create_matrix3d
-    Point.fusion_sketch = create_sketch_point
-    Points.fusion_sketch = create_sketch_points
+    Point.fusion_sketch_point = create_sketch_point
+    Point.fusion_sketch_points = create_sketch_points
+
 
     Transformation.from_matrix3d = staticmethod(parse_matrix3d)
     

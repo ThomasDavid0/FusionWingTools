@@ -10,13 +10,13 @@
             "length": 500,
             "sweep": 0,
             "inbd": {
-                "airfoil": "clarky-il",
+                "airfoil": "clarkysm-il",
                 "chord": 350,
                 "te_thickness": 1.5,
                 "incidence": 0.0
             },
             "otbd": {
-                "airfoil": "clarky-il",
+                "airfoil": "clarkysm-il",
                 "chord": 350,
                 "te_thickness": 1.5,
                 "incidence": 0.0
@@ -24,7 +24,7 @@
         },
         {
             "name": "wing_outer",
-            "acpos": {"x":-350,"y": 560,"z": 0},
+            "acpos": {"x":-300,"y": 560,"z": 0},
             "dihedral": 0.0,
             "incidence": 0.0,
             "length": 1250,
@@ -44,19 +44,19 @@
         },
         {
             "name": "tail",
-            "acpos": {"x":-1200,"y": 0,"z": 0},
+            "acpos": {"x":-1400,"y": 0,"z": 20},
             "dihedral": 0.0,
             "incidence": 0.0,
             "length": 500,
             "sweep": 40,
             "inbd": {
-                "airfoil": "E472-il",
+                "airfoil": "s9032-il",
                 "chord": 230,
                 "te_thickness": 1,
                 "incidence": 0.0
             },
             "otbd": {
-                "airfoil": "E472-il",
+                "airfoil": "s9032-il",
                 "chord": 190,
                 "te_thickness": 1,
                 "incidence": 0.0
@@ -64,19 +64,19 @@
         },
         {
             "name": "fin",
-            "acpos": {"x":-1400,"y": 0,"z": 0},
+            "acpos": {"x":-1400,"y": 0,"z": 20},
             "dihedral": 90.0,
             "incidence": 0.0,
             "length": 410,
             "sweep": 100,
             "inbd": {
-                "airfoil": "e230-il",
+                "airfoil": "s9032-il",
                 "chord": 250,
                 "te_thickness": 1.5,
                 "incidence": 0.0
             },
             "otbd": {
-                "airfoil": "e230-il",
+                "airfoil": "s9032-il",
                 "chord": 150,
                 "te_thickness": 1.5,
                 "incidence": 0.0

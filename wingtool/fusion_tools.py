@@ -143,7 +143,7 @@ class Parameters:
 class Spline:
     @staticmethod
     def create(points: Points, sketch):
-        spline_points = (points * Point(1, -1, 0)).fusion_sketch()
+        spline_points = (points * Point(1, -1, 0)).fusion_sketch_points()
         spline = sketch.sketchCurves.sketchFittedSplines.add(spline_points)
         
         try:
@@ -158,8 +158,8 @@ class Spline:
 class Line:
     @staticmethod
     def create(start, end, sketch):
-        start = (start * Point(1, -1, 0)).fusion_sketch() 
-        end = (end * Point(1, -1, 0)).fusion_sketch() 
+        start = (start * Point(1, -1, 0)).fusion_sketch_point() 
+        end = (end * Point(1, -1, 0)).fusion_sketch_point() 
 
         try:
             line = sketch.sketchCurves.sketchLines[0]

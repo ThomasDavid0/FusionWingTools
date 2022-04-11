@@ -33,7 +33,7 @@ def run(context):
                
         plane = ConventionalPlane.parse_json(Path(__file__).parent / "examples/BUDDI_tilt.json")
         
-        proj = Project.get_or_create("test6")
+        proj = Project.get_or_create("BUDDI_V3")
 #
         fplane = FusionPlane(plane, proj)
 
