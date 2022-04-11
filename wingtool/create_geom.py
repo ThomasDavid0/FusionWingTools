@@ -7,7 +7,7 @@ import numpy as np
 
 def create_matrix3d(self: Transformation):
     matr =  adsk.core.Matrix3D.create()
-    matd = (self * 0.1).to_matrix().T.tolist()
+    matd = (self * 0.1).to_matrix()[0,:,:].T.tolist()
 
     if matr.setWithArray(list(chain(*matd))):
         return matr

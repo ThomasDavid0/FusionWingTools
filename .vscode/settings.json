@@ -1,5 +1,5 @@
 {
 	"python.autoComplete.extraPaths":	["C:/Users/td6834/AppData/Roaming/Autodesk/Autodesk Fusion 360/API/Python/defs", "C:/Users/td6834/AppData/Roaming/Autodesk/Autodesk Fusion 360/API/Scripts/WingTool/AircrafDesign", "C:/Users/td6834/AppData/Roaming/Autodesk/Autodesk Fusion 360/API/Scripts/WingTool/geometry"],
 	"python.analysis.extraPaths":	["C:/Users/td6834/AppData/Roaming/Autodesk/Autodesk Fusion 360/API/Python/defs", "C:/Users/td6834/AppData/Roaming/Autodesk/Autodesk Fusion 360/API/Scripts/WingTool/AircrafDesign", "C:/Users/td6834/AppData/Roaming/Autodesk/Autodesk Fusion 360/API/Scripts/WingTool/geometry"],
-	"python.pythonPath":	"C:/Users/td6834/AppData/Local/Autodesk/webdeploy/production/50d1a2b00ac928c7781cbca6551e586a5384d498/Python/python.exe"
+	"python.pythonPath":	"C:/Users/td6834/AppData/Local/Autodesk/webdeploy/production/19107935ce2ad08720646cb4a31efe37d8a5f41b/Python/python.exe"
 }

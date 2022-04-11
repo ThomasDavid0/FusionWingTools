@@ -14,7 +14,7 @@ setup_install([
     ])
 
 
-from acdesign.aircraft import Plane, Rib
+from acdesign.aircraft.plane import ConventionalPlane
 from .wingtool.fusion_tools import Document, Parameters, JointOrigin, Project
 from .wingtool.fusion_aircraft import FusionPlane
 
@@ -23,11 +23,6 @@ from .wingtool import tag_methods
 tag_methods()
 
 
-def parse_plane(acjson):
-    with open(acjson, "r") as f:
-        data = load(f)
-
-    return Plane.create(**data)
 
 def run(context):
     ui = None
@@ -36,7 +31,7 @@ def run(context):
         ui  = app.userInterface
 
                
-        plane = parse_plane(Path(__file__).parent / "examples/BUDDI_tilt.json")
+        plane = ConventionalPlane.parse_json(Path(__file__).parent / "examples/BUDDI_tilt.json")
         
         proj = Project.get_or_create("test6")
 #

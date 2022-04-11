@@ -38,7 +38,6 @@ def parse_panel_parms(doc) -> Panel:
         acpos=Point.zeros().to_dict(),
         dihedral=0.0,
         incidence=0.0,
-        symm=False,
         inbd={
             "airfoil":uparms["desired_root_section"].comment, 
             "chord":uparms["desired_root_chord"].value * 10, 
