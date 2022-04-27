@@ -1,101 +1,126 @@
 {
     "version": 0.01,
-    "name": "BUDDI_tilt",
+    "name": "Buddi",
     "panels": [
-        {
-            "name": "wing_centre",
-            "acpos": {"x":-300,"y": 0,"z": 0},
-            "dihedral": 0.0,
-            "incidence": 0.0,
-            "length": 500,
-            "sweep": 0,
-            "inbd": {
-                "airfoil": "clarkysm-il",
-                "chord": 350,
-                "te_thickness": 1.5,
-                "incidence": 0.0
-            },
-            "otbd": {
-                "airfoil": "clarkysm-il",
-                "chord": 350,
-                "te_thickness": 1.5,
-                "incidence": 0.0
-            }
+      {
+        "name": "wing_centre",
+        "acpos": {
+          "x": -300.0,
+          "y": 0.0,
+          "z": 0.0
         },
-        {
-            "name": "wing_outer",
-            "acpos": {"x":-300,"y": 560,"z": 0},
-            "dihedral": 0.0,
-            "incidence": 0.0,
-            "length": 1250,
-            "sweep": 100,
-            "inbd": {
-                "airfoil": "sa7038-il",
-                "chord": 350,
-                "te_thickness": 1.5,
-                "incidence": 0.0
-            },
-            "otbd": {
-                "airfoil": "sa7038-il",
-                "chord": 200,
-                "te_thickness": 1.5,
-                "incidence": 0.0
-            }
+        "dihedral": -0.0,
+        "incidence": 0.0,
+        "length": 400.0,
+        "sweep": 0.0,
+        "inbd": {
+          "airfoil": "clarkysm-il",
+          "chord": 328.947,
+          "te_thickness": 2.0,
+          "incidence": 2.766
         },
-        {
-            "name": "tail",
-            "acpos": {"x":-1400,"y": 0,"z": 20},
-            "dihedral": 0.0,
-            "incidence": 0.0,
-            "length": 500,
-            "sweep": 40,
-            "inbd": {
-                "airfoil": "s9032-il",
-                "chord": 230,
-                "te_thickness": 1,
-                "incidence": 0.0
-            },
-            "otbd": {
-                "airfoil": "s9032-il",
-                "chord": 190,
-                "te_thickness": 1,
-                "incidence": 0.0
-            }
-        },
-        {
-            "name": "fin",
-            "acpos": {"x":-1400,"y": 0,"z": 20},
-            "dihedral": 90.0,
-            "incidence": 0.0,
-            "length": 410,
-            "sweep": 100,
-            "inbd": {
-                "airfoil": "s9032-il",
-                "chord": 250,
-                "te_thickness": 1.5,
-                "incidence": 0.0
-            },
-            "otbd": {
-                "airfoil": "s9032-il",
-                "chord": 150,
-                "te_thickness": 1.5,
-                "incidence": 0.0
-            }
+        "otbd": {
+          "airfoil": "clarkysm-il",
+          "chord": 328.947,
+          "te_thickness": 2.0,
+          "incidence": 2.766
         }
-
+      },
+      {
+        "name": "wing_outer",
+        "acpos": {
+          "x": -300.0,
+          "y": 460.0,
+          "z": 0.0
+        },
+        "dihedral": -0.0,
+        "incidence": 0.0,
+        "length": 1340.0,
+        "sweep": 100.0,
+        "inbd": {
+          "airfoil": "clarkysm-il",
+          "chord": 328.947,
+          "te_thickness": 2.0,
+          "incidence": 2.766
+        },
+        "otbd": {
+          "airfoil": "sa7038-il",
+          "chord": 197.368,
+          "te_thickness": 2.0,
+          "incidence": 2.766
+        }
+      },
+      {
+        "name": "tail",
+        "acpos": {
+          "x": -1400.0,
+          "y": 0.0,
+          "z": 55.0
+        },
+        "dihedral": -0.0,
+        "incidence": 0.0,
+        "length": 447.214,
+        "sweep": 50.0,
+        "inbd": {
+          "airfoil": "s9032-il",
+          "chord": 248.452,
+          "te_thickness": 2.0,
+          "incidence": 0.0
+        },
+        "otbd": {
+          "airfoil": "s9032-il",
+          "chord": 198.762,
+          "te_thickness": 2.0,
+          "incidence": 0.0
+        }
+      },
+      {
+        "name": "fin",
+        "acpos": {
+          "x": -1400.0,
+          "y": 0.0,
+          "z": 55.0
+        },
+        "dihedral": 90.0,
+        "incidence": 0.0,
+        "length": 447.214,
+        "sweep": 50.0,
+        "inbd": {
+          "airfoil": "s9032-il",
+          "chord": 248.452,
+          "te_thickness": 2.0,
+          "incidence": 0.0
+        },
+        "otbd": {
+          "airfoil": "s9032-il",
+          "chord": 198.762,
+          "te_thickness": 2.0,
+          "incidence": 0.0
+        }
+      }
     ],
-    "bodies": [],
-    "masses": [
-        {
-            "name": "total",
-            "cg": {"x":-511,"y": 0,"z": 0},
-            "mass": 16,
-            "inertia": [
-                [1, 0, 0],
-                [0, 1, 0],
-                [0, 0, 1]
-            ]
-
+    "bodies": [
+      {
+        "name": "body",
+        "acpos": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
         }
+      }
+    ],
+    "masses": [
+      {
+        "name": "total",
+        "cg": {
+          "x": 400,
+          "y": 0,
+          "z": 0
+        },
+        "m": 16.0,
+        "geom": {
+          "shape": "point"
+        }
+      }
     ]
-}
+  }
