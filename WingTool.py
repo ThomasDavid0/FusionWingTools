@@ -1,7 +1,7 @@
 import adsk.core, adsk.fusion, adsk.cam, traceback
 import os, sys
 import pkg_resources
-from .install_requirements import pip_install, setup_install
+from wingtool.install_requirements import pip_install, setup_install
 from json import load
 from pathlib import Path
 
@@ -17,6 +17,7 @@ setup_install([
 from acdesign.aircraft.plane import ConventionalPlane
 from .wingtool.fusion_tools import Document, Parameters, JointOrigin, Project
 from .wingtool.fusion_aircraft import FusionPlane
+from .wingtool.fusion_panel import FusionPanel
 
 
 from .wingtool import tag_methods
@@ -30,11 +31,12 @@ def run(context):
         app = adsk.core.Application.get()
         ui  = app.userInterface
 
-               
-        plane = ConventionalPlane.parse_json(Path(__file__).parent / "examples/BUDDI_tilt.json")
-        
-        proj = Project.get_or_create("BUDDI_V3")
-#
+        infile = Path(__file__).parent / "examples/f3a.json"# "examples/BUDDI_tilt.json"#  # 
+        outdes = "Placebo"#"BUDDI_V3"#
+        plane = ConventionalPlane.parse_json(infile)
+        proj = Project.get_or_create(outdes)
+        #fpanel = FusionPanel(app.activeDocument)
+
         fplane = FusionPlane(plane, proj)
 
         pass

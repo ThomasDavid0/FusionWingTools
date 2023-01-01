@@ -99,7 +99,7 @@ class FusionPanel:
             angle=Parameters.find("tip_incidence", self.doc.design.userParameters).name
         )
         doc.save("panel updated")
- 
+
 
 class PlacedPanel(FusionPanel):
     def __init__(self, panel: Panel, parent: adsk.core.Document):

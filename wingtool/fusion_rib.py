@@ -56,7 +56,7 @@ class FusionRib:
                 chord_line.startSketchPoint, 
                 chord_line.endSketchPoint, 
                 1, 
-                Point(self.rib.chord / 2, 20, 0).fusion_sketch()
+                Point(self.rib.chord / 2, 20, 0).fusion_sketch_point()
             )
             dim.parameter.name = f"{location}_chord"
             self.chord_parm = Parameters.find(f"{location}_chord", self.occ.component.modelParameters)

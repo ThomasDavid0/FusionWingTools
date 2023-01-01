@@ -51,7 +51,7 @@
         }
       },
       {
-        "name": "tail",
+        "name": "tail_inner",
         "acpos": {
           "x": -1400.0,
           "y": 0.0,
@@ -59,17 +59,41 @@
         },
         "dihedral": -0.0,
         "incidence": 0.0,
-        "length": 447.214,
-        "sweep": 50.0,
+        "length": 40,
+        "sweep": 0.0,
         "inbd": {
           "airfoil": "s9032-il",
-          "chord": 248.452,
+          "chord": 250,
           "te_thickness": 2.0,
           "incidence": 0.0
         },
         "otbd": {
           "airfoil": "s9032-il",
-          "chord": 198.762,
+          "chord": 250,
+          "te_thickness": 2.0,
+          "incidence": 0.0
+        }
+      },
+      {
+        "name": "tail",
+        "acpos": {
+          "x": -1400.0,
+          "y": 40.0,
+          "z": 55.0
+        },
+        "dihedral": -0.0,
+        "incidence": 0.0,
+        "length": 450,
+        "sweep": 50.0,
+        "inbd": {
+          "airfoil": "s9032-il",
+          "chord": 250,
+          "te_thickness": 2.0,
+          "incidence": 0.0
+        },
+        "otbd": {
+          "airfoil": "s9032-il",
+          "chord": 180,
           "te_thickness": 2.0,
           "incidence": 0.0
         }
@@ -83,17 +107,17 @@
         },
         "dihedral": 90.0,
         "incidence": 0.0,
-        "length": 447.214,
-        "sweep": 50.0,
+        "length": 375,
+        "sweep": 70.0,
         "inbd": {
-          "airfoil": "s9032-il",
-          "chord": 248.452,
+          "airfoil": "e297-il",
+          "chord": 250,
           "te_thickness": 2.0,
           "incidence": 0.0
         },
         "otbd": {
-          "airfoil": "s9032-il",
-          "chord": 198.762,
+          "airfoil": "e297-il",
+          "chord": 140,
           "te_thickness": 2.0,
           "incidence": 0.0
         }
